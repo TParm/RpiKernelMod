@@ -8,7 +8,7 @@
 
 //** Variables **//
 static int toggleSpeed = 1;
-static int ioPins[2] = {20, 21};
+static int GpioPins[2] = {20, 21};
 static int arr_argc = 0;
 static int toggleCounter = 0;
 static int divider = 0;
@@ -16,8 +16,8 @@ static int divider = 0;
 module_param(toggleSpeed, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 MODULE_PARM_DESC(toggleSpeed, "An integer");
 
-module_param_array(ioPins, int, &arr_argc, 0000);
-MODULE_PARM_DESC(ioPins, "An array of integers");
+module_param_array(GpioPins, int, &arr_argc, 0000);
+MODULE_PARM_DESC(GpioPins, "An array of integers");
 
 static struct timer_list blink_timer;
 static long led1 = 0;
@@ -37,8 +37,8 @@ static void blink_timer_func(struct timer_list *t)
 	divider = toggleCounter/2;
 
 	printk(KERN_INFO "Leds toggled %d times\n", divider);
-	gpio_set_value(ioPins[0], led1);
-	gpio_set_value(ioPins[1], led2);
+	gpio_set_value(GpioPins[0], led1);
+	gpio_set_value(GpioPins[1], led2);
 	
 	led1 = !led1;
 	led2 = !led2;
@@ -60,9 +60,9 @@ static int __init gpiokmod_init(void)
 	printk(KERN_INFO "Selected togglespeed: %d\n", toggleSpeed);
 
 	printk(KERN_INFO "Selected gpio pins: \n");
-	for (i = 0; i < (sizeof ioPins / sizeof(int)); i++)
+	for (i = 0; i < (sizeof GpioPins / sizeof(int)); i++)
 	{
-		printk(KERN_INFO "myGpioArray[%d] = %d\n", i, ioPins[i]);
+		printk(KERN_INFO "myGpioArray[%d] = %d\n", i, GpioPins[i]);
 	}
 
 	printk(KERN_INFO "got %d arguments for myGpioArray.\n", arr_argc);
@@ -70,12 +70,12 @@ static int __init gpiokmod_init(void)
 	printk(KERN_INFO "%s\n", __func__);
 
 	// register, turn off
-	ret = gpio_request_one(ioPins[0], GPIOF_OUT_INIT_LOW, "ioPins[0]");
-	ret = gpio_request_one(ioPins[1], GPIOF_OUT_INIT_LOW, "ioPins[1]");
+	ret = gpio_request_one(GpioPins[0], GPIOF_OUT_INIT_LOW, "GpioPins[0]");
+	ret = gpio_request_one(GpioPins[1], GPIOF_OUT_INIT_LOW, "GpioPins[1]");
 
 	if (ret)
 	{
-		printk(KERN_ERR "Unable to request GPioPins: %d\n", ret);
+		printk(KERN_ERR "Unable to request GpioPins: %d\n", ret);
 		return ret;
 	}
 
@@ -114,12 +114,12 @@ static void __exit gpiokmod_exit(void)
 	del_timer_sync(&blink_timer);
 
 	// turn off LED
-	gpio_set_value(ioPins[0], 0);
-	gpio_set_value(ioPins[1], 0);
+	gpio_set_value(GpioPins[0], 0);
+	gpio_set_value(GpioPins[1], 0);
 
 	// unregister GPIO
-	gpio_free(ioPins[0]);
-	gpio_free(ioPins[1]);
+	gpio_free(GpioPins[0]);
+	gpio_free(GpioPins[1]);
 
 	// turn off LEDS
 	for (i = 0; i < ARRAY_SIZE(leds); i++)
