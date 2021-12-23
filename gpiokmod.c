@@ -6,22 +6,18 @@
 #include <linux/gpio.h>
 #include <linux/interrupt.h>
 
-/*
- * The module commandline arguments ...
- */
+//** Variables **//
 static int toggleSpeed = 1;
-// static int edgePin = 21;
 static int ioPins[2] = {20, 21};
 static int arr_argc = 0;
+static int toggleCounter = 0;
+static int divider = 0;
 
 module_param(toggleSpeed, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 MODULE_PARM_DESC(toggleSpeed, "An integer");
 
 module_param_array(ioPins, int, &arr_argc, 0000);
 MODULE_PARM_DESC(ioPins, "An array of integers");
-
-// module_param(edgePin, int, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-// MODULE_PARM_DESC(edgePin, "An integer");
 
 static struct timer_list blink_timer;
 static long led1 = 0;
@@ -37,17 +33,18 @@ static struct gpio leds[] = {
  */
 static void blink_timer_func(struct timer_list *t)
 {
-	/* Uncomment for printing. */
-	// printk(KERN_INFO "%s\n", __func__);
+	toggleCounter++;
+	divider = toggleCounter/2;
+
+	printk(KERN_INFO "Leds toggled %d times\n", divider);
 	gpio_set_value(ioPins[0], led1);
 	gpio_set_value(ioPins[1], led2);
-
+	
 	led1 = !led1;
 	led2 = !led2;
 
 	/* schedule next execution */
 	blink_timer.expires = jiffies + (toggleSpeed * HZ); // 1 sec.
-	printk(KERN_INFO "timer!!!\n");
 	add_timer(&blink_timer);
 }
 
@@ -57,13 +54,11 @@ static void blink_timer_func(struct timer_list *t)
 static int __init gpiokmod_init(void)
 {
 	int i;
-
 	int ret = 0;
 
 	printk(KERN_INFO "Start module 'gpiokmod'\n");
 	printk(KERN_INFO "Selected togglespeed: %d\n", toggleSpeed);
 
-	// printk(KERN_INFO "Edge detection pin: %d\n", edgePin);
 	printk(KERN_INFO "Selected gpio pins: \n");
 	for (i = 0; i < (sizeof ioPins / sizeof(int)); i++)
 	{
@@ -118,7 +113,7 @@ static void __exit gpiokmod_exit(void)
 	// deactivate timer if running
 	del_timer_sync(&blink_timer);
 
-	// turn LED off
+	// turn off LED
 	gpio_set_value(ioPins[0], 0);
 	gpio_set_value(ioPins[1], 0);
 
@@ -126,7 +121,7 @@ static void __exit gpiokmod_exit(void)
 	gpio_free(ioPins[0]);
 	gpio_free(ioPins[1]);
 
-	// turn all LEDs off
+	// turn off LEDS
 	for (i = 0; i < ARRAY_SIZE(leds); i++)
 	{
 		gpio_set_value(leds[i].gpio, 0);
@@ -134,7 +129,6 @@ static void __exit gpiokmod_exit(void)
 
 	// unregister
 	gpio_free_array(leds, ARRAY_SIZE(leds));
-	/* -------- Till here -------- */
 }
 
 MODULE_LICENSE("GPL");
