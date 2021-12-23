@@ -6,7 +6,7 @@
 
 DONE
 
-- toggle 2 ios
+- toggle 2 gpio pins(20, 21)
 
 ---
 
@@ -21,9 +21,8 @@ Commands for RPi.
 sudo apt-get install raspberrypi-kernel-headers
 git clone https://github.com/TParm/Rpi_Kernel_Mod.git
 
-# Navigate to lgpios_kmod folder.
-cd 
-cd 
+# Navigate to Rpi_Kernel_Mod folder.
+cd Rpi_Kernel_Mod/
 
 # Make & remove existing module if needed.
 make
