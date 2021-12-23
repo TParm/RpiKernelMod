@@ -7,7 +7,6 @@
 DONE
 
 - toggle 2 ios
-- count edges
 
 ---
 
@@ -20,18 +19,18 @@ Commands for RPi.
 ```bash
 # Install RPi kernel headers & clone repo.
 sudo apt-get install raspberrypi-kernel-headers
-git clone 
+git clone https://github.com/TParm/Rpi_Kernel_Mod.git
 
-# Navigate to leds_edges_kmod folder.
-cd
+# Navigate to lgpios_kmod folder.
+cd 
 cd 
 
 # Make & remove existing module if needed.
 make
-sudo rmmod .ko
+sudo rmmod gpiokmod.ko
 
 # Insmod with args (choose toggleSpeed, ioPins... (for x)).
-sudo insmod .ko toggleSpeed=x ioPins=x,x 
+sudo insmod gpiokmod.ko toggleSpeed=x ioPins=x,x 
 
 # Check kernel messages.
 dmesg
