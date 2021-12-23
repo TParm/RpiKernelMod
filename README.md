@@ -28,8 +28,8 @@ cd Rpi_Kernel_Mod/
 make
 sudo rmmod gpiokmod.ko
 
-# Insmod with args (choose toggleSpeed, ioPins... (for x)).
-sudo insmod gpiokmod.ko toggleSpeed=x ioPins=x,x 
+# Insmod with args (choose toggleSpeed, GpioPins... (for x)).
+sudo insmod gpiokmod.ko toggleSpeed=x GpioPins=x,x 
 
 # Check kernel messages.
 dmesg
